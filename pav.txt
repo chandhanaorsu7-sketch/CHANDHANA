@@ -1,0 +1,84 @@
+Step 1: Setup Your Development Environment
+
+Install necessary Python packages:
+
+pip install streamlit transformers soundfile numpy
+
+
+Register on Hugging Face and obtain your API key (if the IBM model requires authentication).
+
+Step 2: Design the Streamlit Interface
+
+Create an interface to:
+
+Upload or paste the book text.
+
+Select voice options (if multiple IBM voices available).
+
+Control playback speed or other settings.
+
+Example snippet:
+
+import streamlit as st
+
+st.title("Echoverse - AI Audiobook Creator")
+text = st.text_area("Paste your book text here:", height=300)
+voice = st.selectbox("Choose voice:", ["IBM Voice 1", "IBM Voice 2"])
+
+Step 3: Text Preprocessing
+
+Clean input text (remove unwanted characters, normalize numbers).
+
+Split text into smaller chunks (e.g., paragraphs or sentences) to avoid TTS input limits.
+
+Step 4: Load IBM TTS Model from Hugging Face
+
+Use Hugging Face’s transformers pipeline or tts library to load the IBM model.
+
+Example:
+
+from transformers import pipeline
+
+tts_pipeline = pipeline("text-to-speech", model="ibm/tts-model-name")
+
+Step 5: Generate Audio from Text
+
+Loop through the text chunks, synthesize audio for each.
+
+Collect audio segments in memory for concatenation.
+
+audio_segments = []
+for chunk in text_chunks:
+    audio_output = tts_pipeline(chunk)
+    audio_segments.append(audio_output["audio"])
+
+Step 6: Post-Process and Combine Audio
+
+Convert audio segments into consistent format.
+
+Concatenate audio chunks into a single audio stream.
+
+Optionally apply noise reduction or normalization.
+
+Step 7: Playback and Download Feature in Streamlit
+
+Use Streamlit’s audio widget to play generated audio.
+
+Provide a download button for users to save the audiobook file.
+
+import io
+
+combined_audio = combine_audio_segments(audio_segments)  # implement combining logic
+audio_buffer = io.BytesIO()
+save_audio_to_buffer(combined_audio, audio_buffer)  # implement saving logic
+
+st.audio(audio_buffer)
+st.download_button("Download Audiobook", data=audio_buffer, file_name="echoverse_audiobook.wav")
+
+Step 8: Additional Features (Optional)
+
+Allow voice cloning or custom voice uploads.
+
+Add background music or ambient sounds.
+
+Implement chapter-wise audio export.
